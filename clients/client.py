@@ -15,7 +15,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         j =json.loads(data)
         print(j)
         """
-        send_data = json.dumps({"objective": {"x": 1, "y": 2}, "constraints": [[{"x": 1}, ">=", 0], [{"y": 1}, ">=", 0] ]}) + "\n"
+        send_data = json.dumps({"objective": {"varDict" :{"x": 1, "y": 2}}, "constraints": [{"expr": {"varDict": {"x": 1}}}, ">=", 0], [{"expr": { "varDict" :{"y": 1}}}, ">=", 0] }) + "\n"
+        print(send_data)
         s.sendall(bytes(send_data, encoding="utf-8"))
         data = s.recv(1024)
         if not data:

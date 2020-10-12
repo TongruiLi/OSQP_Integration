@@ -66,19 +66,22 @@ module solver
             var = @variable(model, base_name = name)
             var_string_to_name[name] = var
         end
-
+        println("constraint construction")
         obj_expr = get_expr(model, var_dict, var_string_to_name)
         for c in constraint_list
-            cons_expr = get_expr(model, c[1], var_string_to_name)
-            op = c[2]
+            println(c)
+            cons_expr = get_expr(model, c["expr"]["varDict"], var_string_to_name)
+            op = c["op"]
             if op == ">="
-                @constraint(model, cons_expr >= c[3])
+                @constraint(model, cons_expr >= c["const"])
             elseif op == "<="
-                @constraint(model, cons_expr <= c[3])
+                @constraint(model, cons_expr <= c["const"])
             elseif op == "=="
-                @constraint(model, cons_expr == c[3])
+                @constraint(model, cons_expr == c["const"])
             end
         end
+        println("finished construction")
+
         @objective(model, Min, obj_expr)
         optimize!(model)
         println(termination_status(model))

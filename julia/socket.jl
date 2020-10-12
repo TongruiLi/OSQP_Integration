@@ -13,10 +13,12 @@ function start_server(port)
         while true
             line = readline(conn)
             j = JSON.parse(line)
-            print(j)
-            results = solve_qp(j["objective"], j["constraints"])
+            println(j)
+            println("solving equation")
+            results = solve_qp(j["objective"]["varDict"], j["constraints"])
+            println("finished solving")
             json_result = JSON.json(results)
-            write(conn, json_result)
+            write(conn, string(json_result, "\n"))
         end
         catch err
         print("connection ended with error $err")

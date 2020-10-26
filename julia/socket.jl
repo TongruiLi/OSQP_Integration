@@ -13,10 +13,10 @@ function start_server(port)
         while true
             line = readline(conn)
             j = JSON.parse(line)
-            println(j)
-            println("solving equation")
+            #println(j)
+            #println("solving equation")
             results = solve_qp(j["objective"]["varDict"], j["constraints"])
-            println("finished solving")
+            #println("finished solving")
             json_result = JSON.json(results)
             write(conn, string(json_result, "\n"))
         end

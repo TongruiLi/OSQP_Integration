@@ -1,4 +1,3 @@
-
 module solver
     using JuMP, OSQP
     export solve_qp
@@ -54,7 +53,11 @@ module solver
                 2x <= 3
             @param warm_start_list: 
         """
+        #println(var_dict)
         var_set = get_variable_names(var_dict)
+        for c in constraint_list
+            var_set = union(var_set, get_variable_names(c["expr"]["varDict"]))
+        end
         var_num = length(var_set) # number of variables
 
         var_string_to_name = Dict()
@@ -66,11 +69,12 @@ module solver
             var = @variable(model, base_name = name)
             var_string_to_name[name] = var
         end
-        println("constraint construction")
+        #println("constraint construction")
         obj_expr = get_expr(model, var_dict, var_string_to_name)
         for c in constraint_list
-            println(c)
+            #println(c)
             cons_expr = get_expr(model, c["expr"]["varDict"], var_string_to_name)
+
             op = c["op"]
             if op == ">="
                 @constraint(model, cons_expr >= c["const"])
@@ -80,7 +84,7 @@ module solver
                 @constraint(model, cons_expr == c["const"])
             end
         end
-        println("finished construction")
+        #println("finished construction")
 
         @objective(model, Min, obj_expr)
         optimize!(model)
@@ -94,9 +98,11 @@ module solver
 end
 """
 vars = Dict([("x1", 1), ("y", 2)])
-cons1 = [Dict([("x1", 1)]), ">=", 0]
-cons2 = [Dict([("y", 1)]), "==", 1]
+cons1 = Dict("expr"=> Dict("varDict" =>Dict([("x1", 1)])), "op" => ">=", "const" => 0)
+cons2 = Dict("expr"=> Dict("varDict" =>Dict([("y", 1)])), "op" => ">=", "const" => 0)
+cons3 = Dict("expr"=> Dict("varDict" =>Dict([("z", 1)])), "op" => ">=", "const" => 0)
+
 using .solver
-r = solve_qp(vars, [cons1, cons2])
+r = solve_qp(vars, [cons1, cons2, cons3])
 println(r)
 """
